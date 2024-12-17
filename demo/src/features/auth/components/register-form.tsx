@@ -1,42 +1,60 @@
-import { useState } from "react";
-import { Input } from "../../../components/shared/input";
-import { Button } from "../../../components/shared/button";
+import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 export function RegisterForm() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [emailError, setEmailError] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+
+  useEffect(() => {
+    if (email.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/)) {
+      setEmailError("");
+    } else {
+      setEmailError("Please enter a valid email address.");
+    }
+  }, [email]);
+
+  useEffect(() => {
+    if (
+      password.match(
+        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+      )
+    ) {
+      setPasswordError("");
+    } else {
+      setPasswordError("Please enter a valid password.");
+    }
+  }, [password]);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+
+    console.log("Registering user with email:", email);
+  }
 
   return (
-    <div className="border p-10 rounded-lg flex flex-col gap-y-5 w-[400px]">
-      <FormHeader />
+    <form className="flex flex-col gap-y-5" onSubmit={handleSubmit}>
       <FormContent
         email={email}
         setEmail={setEmail}
         password={password}
         setPassword={setPassword}
+        emailError={emailError}
+        passwordError={passwordError}
       />
-    </div>
-  );
-}
 
-/**
- * FormHeader component renders the header section of the registration form.
- * It includes a title and a brief instruction for the user.
- *
- * @returns {JSX.Element} The JSX code for the form header.
- */
-function FormHeader() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Register</h1>
-      <p>Enter your information</p>
-    </div>
+      <Button type="submit">Register</Button>
+    </form>
   );
 }
 
 interface FormContentProps {
   email: string;
   password: string;
+  emailError?: string;
+  passwordError?: string;
   setEmail: (email: string) => void;
   setPassword: (password: string) => void;
 }
@@ -55,20 +73,37 @@ interface FormContentProps {
 function FormContent({
   email,
   password,
+  emailError,
+  passwordError,
   setEmail,
   setPassword,
 }: FormContentProps) {
   return (
     <div className="flex flex-col gap-y-5">
-      <Input value={email} setValue={setEmail} placeholder="Email" />
-      <Input
-        value={password}
-        setValue={setPassword}
-        placeholder="Password"
-        type="password"
-      />
+      <div className="flex flex-col gap-y-1">
+        <Input
+          type="email"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          className={`${emailError && emailError?.length > 0 ? "border-red-500" : ""}`}
+        />
+        {emailError && emailError?.length > 0 && (
+          <p className="text-red-500 text-sm">{emailError}</p>
+        )}
+      </div>
 
-      <Button>Register</Button>
+      <div className="flex flex-col gap-y-1">
+        <Input
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+        {passwordError && passwordError?.length > 0 && (
+          <p className="text-red-500 text-sm">{passwordError}</p>
+        )}
+      </div>
     </div>
   );
 }
