@@ -1,6 +1,4 @@
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { registerFormSchema, RegisterSchema } from "../schemas/register-schema";
 
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,30 +10,23 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { useRegister } from "../hooks/use-register";
+import { loginSchema, LoginSchema } from "../schemas/login-schema";
+import { useLogin } from "../hooks/use-login";
 
-export function RegisterForm() {
-  const { mutate: register, isPending } = useRegister();
+export function LoginForm() {
+  const { mutate: login, isPending } = useLogin();
 
   // 1. Define your form.
-  const form = useForm<RegisterSchema>({
-    resolver: zodResolver(registerFormSchema),
+  const form = useForm<LoginSchema>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  function onSubmit(values: RegisterSchema) {
-    if (values.confirmPassword !== values.password) {
-      form.setError("confirmPassword", {
-        message: "Passwords do not match.",
-      });
-      return;
-    }
-
-    register(values);
+  function onSubmit(values: LoginSchema) {
+    login(values);
   }
 
   return (
@@ -67,24 +58,8 @@ export function RegisterForm() {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="confirmPassword"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="Confirm password"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <Button type="submit" disabled={isPending}>
-          Register
+          Login
         </Button>
       </form>
     </Form>
