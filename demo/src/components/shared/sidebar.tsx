@@ -1,10 +1,17 @@
 import React from "react";
-import { SidebarIcon } from "lucide-react";
+import { LucideIcon, SidebarIcon } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { useSidebar } from "@/store/use-sidebar";
+import { cn } from "@/lib/utils";
+import { Label } from "../ui/label";
+import { Button } from "../ui/button";
+import { Link } from "@tanstack/react-router";
 
 export function SidebarWrapper({ children }: { children: React.ReactNode }) {
+  const { mounted } = useSidebar();
+
+  if (!mounted) return null;
+
   return <div className="flex">{children}</div>;
 }
 
@@ -12,11 +19,7 @@ export function SidebarTrigger() {
   const { toggle } = useSidebar();
 
   return (
-    <SidebarIcon
-      role="button"
-      className="size-4 absolute m-5 z-50 transition-all ease-in-out duration-300 hover:scale-105"
-      onClick={toggle}
-    />
+    <SidebarIcon className="fixed m-5" role="button" onClick={() => toggle()} />
   );
 }
 
@@ -26,8 +29,8 @@ export function SidebarChildren({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "transition-all ease-in-out duration-300",
-        isOpen ? "ml-64" : "ml-16"
+        "transition-all duration-300 ease-in-out w-full",
+        isOpen ? "ml-64" : "ml-0"
       )}
     >
       {children}
@@ -41,11 +44,57 @@ export function Sidebar({ children }: { children: React.ReactNode }) {
   return (
     <div
       className={cn(
-        "bg-slate-900 min-h-[calc(100vh-65px)] text-white fixed transition-all ease-in-out duration-300",
-        isOpen ? "w-64" : "w-16"
+        "min-h-[calc(100vh-65px)] max-h-[calc(100vh-65px)] bg-slate-900 transition-all duration-300 ease-in-out fixed text-white overflow-y-auto overflow-x-hidden",
+        isOpen ? "w-64" : "w-0"
       )}
     >
       {children}
     </div>
+  );
+}
+
+export function SidebarContent({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col gap-y-10">{children}</div>;
+}
+
+export function SidebarGroup({ children }: { children: React.ReactNode }) {
+  return <div className="flex flex-col px-2">{children}</div>;
+}
+
+export function SidebarLabel({ children }: { children: React.ReactNode }) {
+  const { isOpen } = useSidebar();
+  return (
+    <Label
+      className={cn(
+        "text-muted-foreground h-9 flex items-center px-4",
+        isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+      )}
+    >
+      {children}
+    </Label>
+  );
+}
+
+export function SidebarItem({
+  label,
+  href,
+  icon: Icon,
+}: {
+  label: string;
+  href: string;
+  icon: LucideIcon;
+}) {
+  const { isOpen } = useSidebar();
+
+  return (
+    <Button variant={"ghost"} className="flex justify-start">
+      <Icon />
+      <Link
+        to={href}
+        className={cn(isOpen ? "opacity-100" : "opacity-0 pointer-events-none")}
+      >
+        {label}
+      </Link>
+    </Button>
   );
 }
