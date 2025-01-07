@@ -1,9 +1,9 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_URL,
-    withCredentials: true,
-    headers: {
-        "Content-Type": "application/json",
-    }
-})
+  baseURL: "http://34.229.205.130:8081/quizzer/api",
+  withCredentials: true,
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
